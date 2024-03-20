@@ -1,0 +1,46 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+#define PRIME 23 // Large prime number q
+#define GENERATOR 5 // Primitive root a
+
+// Function to calculate modular exponentiation (a^b mod m)
+int modExp(int a, int b, int m) {
+    int result = 1;
+    a = a % m;
+    while (b > 0) {
+        if (b % 2 == 1)
+            result = (result * a) % m;
+        b = b / 2;
+        a = (a * a) % m;
+    }
+    return result;
+}
+
+int main() {
+    int private_key_a, private_key_b; // Private keys of Alice and Bob
+    int public_key_a, public_key_b;   // Public keys of Alice and Bob
+
+    // Alice's side
+    private_key_a = rand() % (PRIME - 1) + 1; // Randomly choose a private key
+    public_key_a = modExp(GENERATOR, private_key_a, PRIME); // Calculate public key
+
+    // Bob's side
+    private_key_b = rand() % (PRIME - 1) + 1; // Randomly choose a private key
+    public_key_b = modExp(GENERATOR, private_key_b, PRIME); // Calculate public key
+
+    // Exchange public keys
+    printf("Alice sends public key to Bob: %d\n", public_key_a);
+    printf("Bob sends public key to Alice: %d\n", public_key_b);
+
+    // Calculate shared secret
+    int shared_secret_a = modExp(public_key_b, private_key_a, PRIME); // Alice computes shared secret
+    int shared_secret_b = modExp(public_key_a, private_key_b, PRIME); // Bob computes shared secret
+
+    // Both Alice and Bob now have the same shared secret
+    printf("Shared secret computed by Alice: %d\n", shared_secret_a);
+    printf("Shared secret computed by Bob: %d\n", shared_secret_b);
+
+    return 0;
+}
